@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: reactmap
+  name: reactmap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: reactmap
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: reactmap
+    spec:
+      containers:
+        - args:
+            - sh
+            - -c
+            - yarn start
+          env:
+            - name: MAP_GENERAL_START_LAT
+              value: "0"
+            - name: MAP_GENERAL_START_LON
+              value: "0"
+            - name: MAP_GENERAL_TITLE
+              value: ReactMap
+            - name: REACT_MAP_DB_HOST
+              value: 127.0.0.1
+            - name: REACT_MAP_DB_NAME
+              value: react_map_db
+            - name: REACT_MAP_DB_PASSWORD
+              value: react_map_user_pw
+            - name: REACT_MAP_DB_PORT
+              value: "3306"
+            - name: REACT_MAP_DB_USERNAME
+              value: react_map_username
+            - name: SCANNER_DB_HOST
+              value: 127.0.0.1
+            - name: SCANNER_DB_NAME
+              value: scanner_db
+            - name: SCANNER_DB_PASSWORD
+              value: scanner_user_pw
+            - name: SCANNER_DB_PORT
+              value: "3306"
+            - name: SCANNER_DB_USERNAME
+              value: scanner_username
+          image: ghcr.io/watwowmap/reactmap:main
+          name: reactmap
+          ports:
+            - containerPort: 8080
+          resources: {}
+          volumeMounts:
+            - name: reactmap-areas
+              mountPath: /home/node/server/src/configs/areas.json
+            - name: reactmap-local  
+              mountPath: /home/node/server/src/configs/local.json
+      restartPolicy: Always
+      volumes:
+        - name: reactmap-areas
+          configMap:
+            name: reactmap-areas
+        - name: reactmap-local
+          configMap:
+            name: reactmap-local
+status: {}
